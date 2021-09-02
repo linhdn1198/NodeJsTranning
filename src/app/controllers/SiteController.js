@@ -5,7 +5,7 @@ class SiteController {
     index(req, res, next) {
         Courses.find({})
             .lean()
-            .then(courses => res.render('home', { courses }))
+            .then((courses) => res.render('home', { courses }))
             .catch(next);
     }
 
