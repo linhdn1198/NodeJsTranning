@@ -22,6 +22,26 @@ class CourseController {
             .then(() => res.redirect('/'))
             .catch(next);
     }
+
+    // [GET] /:id/edit
+    edit(req, res, next) {
+        Course.findOne({ _id: req.params.id })
+            .lean()
+            .then((course) => res.render('course/edit', { course }))
+            .catch(next);
+    }
+
+    // [POST] /:id/update
+    update(req, res, next) {
+        const { name, description, image } = req.body;
+
+        Course.findOneAndUpdate(
+            { _id: req.params.id },
+            { name, description, image },
+        )
+            .then(() => res.redirect('/me/stored/courses'))
+            .catch(next);
+    }
 }
 
 module.exports = new CourseController();
