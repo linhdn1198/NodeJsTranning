@@ -9,6 +9,7 @@ router.put('/:id', courseController.update);
 router.patch('/:id/restore', courseController.restore);
 router.delete('/:id', courseController.destroy);
 router.delete('/:id/force', courseController.forceDestroy);
+router.post('/handle-form-action', courseController.handleFormAction);
 router.get('/:slug', courseController.show);
 
 module.exports = router;

@@ -1,39 +1,60 @@
+<form action="/courses/handle-form-action" method="post">
 <div class="row">
     <div class="col-sm-12">
         <h4>My courses</h4>
         <a href="/me/trash/courses">Trash ({{deletedCount}})</a>
+    </div>
+    <div class="col-sm-6 mb-4">
+        <div class="form-inline">
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="checked-all">
+                <label class="form-check-label" for="checked-all">Check all</label>
+            </div>
+            <div class="form-group mx-sm-3">
+                <select class="form-control" name="action">
+                    <option value="">Choose action...</option>
+                    <option value="remove">Remove</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitAction" disabled>Submit</button>
+        </div>
+    </div>
+    <div class="col-sm-12">
         <table class="table table-striped table-border table-hover">
             <thead>
                 <tr>
+                    <th># </th>
                     <th>Name</th>
                     <th>Description</th>
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
-                </thead>
-                <tbody>
+            </thead>
+            <tbody>
                     {{#each courses}}
-                        <tr>
-                            <td>{{this.name}}</td>
-                            <td>{{this.description}}</td>
-                            <td>{{this.image}}</td>
-                            <td>
-                                <a href="/courses/{{this._id}}/edit" class="btn btn-sm btn-warning">Edit</a>
-                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modelId" data-id="{{this._id}}">Remove</button>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td><input type="checkbox" name="courseIds[]" value="{{this._id}}"></td>
+                        <td>{{this.name}}</td>
+                        <td>{{this.description}}</td>
+                        <td>{{this.image}}</td>
+                        <td>
+                            <a href="/courses/{{this._id}}/edit" class="btn btn-sm btn-warning">Edit</a>
+                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                data-target="#modelId" data-id="{{this._id}}">Remove</button>
+                        </td>
+                    </tr>
                     {{else}}
-                        <tr>
-                            <td class="text-center" colspan="4">
-                                No course. <a href="/courses/create">Create course</a>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td class="text-center" colspan="5">
+                            No course. <a href="/courses/create">Create course</a>
+                        </td>
+                    </tr>
                     {{/each}}
-                </tbody>
+            </tbody>
         </table>
     </div>
 </div>
-
+</form>
 <form id="form" method="post"></form>
 
 <!-- Modal -->
@@ -42,9 +63,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Confirm</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 Are you sure you want to remove?
@@ -62,11 +83,32 @@
         $('#modelId').on('show.bs.modal', function (event) {
             const button = $(event.relatedTarget);
             const id = button.data('id');
-            $('#form').attr('action', `/courses/${id}?_method=DELETE`);         
+            $('#form').attr('action', `/courses/${id}?_method=DELETE`);
         });
 
-        $('#submitForm').on('click', function() {
+        $('#submitForm').on('click', function () {
             $('#form').submit();
         });
+
+        $('input[name="courseIds[]"]').on('change', function () {
+            const totalCheck = $('input[name="courseIds[]"]').length;
+            const actualChecked = $('input[name="courseIds[]"]:checked').length;
+            const isDisable = actualChecked === 0 || $(this).val() === '';
+            $('#checked-all').prop('checked', totalCheck === actualChecked);
+            $('#submitAction').prop('disabled', isDisable);
+        });
+
+        $('#checked-all').on('change', function () {
+            $('input[name="courseIds[]"]').prop('checked', $(this).is(':checked'));
+            const actualChecked = $('input[name="courseIds[]"]:checked').length;
+            const isDisable = actualChecked === 0 || $(this).val() === '';
+            $('#submitAction').prop('disabled', isDisable);
+        })
+
+        $('select[name=action]').on('change', function() {
+            const actualChecked = $('input[name="courseIds[]"]:checked').length;
+            const isDisable = actualChecked === 0 || $(this).val() === '';
+            $('#submitAction').prop('disabled', isDisable);
+        })
     })
 </script>
