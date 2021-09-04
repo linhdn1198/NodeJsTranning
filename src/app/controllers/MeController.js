@@ -3,7 +3,10 @@ const Course = require('../../models/Course');
 class MeController {
     // [GET] /stored/courses
     index(req, res, next) {
-        Promise.all([Course.find({}).lean(), Course.countDocumentsDeleted()])
+        Promise.all([
+            Course.find({}).sortable(req).lean(),
+            Course.countDocumentsDeleted(),
+        ])
             .then(([courses, deletedCount]) => {
                 res.render('me/stored-courses', { courses, deletedCount });
             })
